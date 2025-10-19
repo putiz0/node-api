@@ -9,24 +9,10 @@ import authRoutes from "./routes/authRoutes.js";
 dotenv.config();
 const app = express();
 
-// ✅ Configuração de segurança e compatibilidade CORS
-const allowedOrigins = [
-  "http://localhost:5173",     // Ambiente local (Vite)
-  "http://127.0.0.1:5173",
-  "https://globalafiliados.vercel.app", // exemplo de domínio futuro
-  "https://globalafiliados.netlify.app"
-];
-
+// ✅ CORS LIBERADO TEMPORARIAMENTE
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("CORS não permitido"));
-      }
-    },
-    credentials: true,
+    origin: "*", // permite qualquer origem
   })
 );
 
