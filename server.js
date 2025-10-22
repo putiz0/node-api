@@ -1,37 +1,41 @@
 import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
 import mongoose from "mongoose";
-
+import cors from "cors";
+import dotenv from "dotenv";
 import productRoutes from "./routes/products_routes.js";
 import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 const app = express();
 
-// ✅ CORS LIBERADO TEMPORARIAMENTE
-app.use(
-  cors({
-    origin: "*", // permite qualquer origem
-  })
-);
-
 app.use(express.json());
 
-// ✅ Rotas principais
+// ✅ CORS liberado para qualquer origem
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
+const PORT = process.env.PORT || 10000;
+const MONGO_URI = process.env.MONGO_URI;
+
+// Conexão com o MongoDB
+mongoose.connect(MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ Conectado ao MongoDB Atlas"))
+.catch((err) => console.error("❌ Erro ao conectar ao MongoDB:", err));
+
+// Rotas
 app.use("/api/products", productRoutes);
 app.use("/api/auth", authRoutes);
 
-// ✅ Conexão MongoDB
-mongoose
-  .connect(process.env.MONGO_URI, {
-    dbName: "afiliados",
-  })
-  .then(() => console.log("✅ MongoDB conectado com sucesso"))
-  .catch((err) => console.error("❌ Erro ao conectar ao MongoDB:", err));
+app.get("/", (req, res) => {
+  res.send("🚀 API do afiliados funcionando!");
+});
 
-// ✅ Inicialização do servidor
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Servidor rodando na porta ${PORT} - Ambiente pronto!`)
-);
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+});
